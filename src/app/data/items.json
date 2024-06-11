@@ -1,0 +1,19 @@
+[
+    {
+        "id": 1,
+        "name": "Lavanderia",
+        "price": 15.000,
+        "imgUrl": "/imgs/lavanderia.jpg"
+    },
+
+    {
+        "id": 2,
+        "name": "Niñera",
+        "price": 30.000,
+        "imgUrl": "/imgs/ninera.jpg"
+    }
+
+
+
+
+]

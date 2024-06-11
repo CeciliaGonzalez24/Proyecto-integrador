@@ -10,7 +10,6 @@ import {
   DynamicForm,
 } from '../03-forms/pages';
 import logo from '../app/assets/img/logo.png';
-import { LoginUser } from '../03-forms/pages/LoginUser';
 import { Login } from '../app/views/auth/login/Login';
 import { AppRouter } from '../app/router/AppRouter';
 import App from '../App';
@@ -74,7 +73,7 @@ export const Navigation = () => {
               <StyledNavLink to="/users" activeClassName="nav-active" exact>Inicio</StyledNavLink>
             </NavItem>
             <NavItem>
-              <StyledNavLink to="/login-user" activeClassName="nav-active" exact>Iniciosesion</StyledNavLink>
+              <StyledNavLink to="/login" activeClassName="nav-active" exact>Iniciosesion</StyledNavLink>
             </NavItem>
             <NavItem>
               <StyledNavLink to="/formik-register" activeClassName="nav-active" exact>Registro</StyledNavLink>
@@ -95,8 +94,8 @@ export const Navigation = () => {
           <Route path="/register">
             <RegisterPage />
           </Route>
-          <Route path="/login-user">
-            <LoginUser />
+          <Route path="/auth/login">
+            <Login />
           </Route>
           <Route path="/formik-basic">
             <FormikBasicPage />

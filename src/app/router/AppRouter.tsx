@@ -9,7 +9,10 @@ import { RegisterPage } from "../../03-forms/pages"
 import { Home } from "../views/dashboard/home/Home"
 import { Navigation } from "../../routes/Navigation"
 import { Recover } from "../views/auth/recover/Recover"
-
+import { Store } from "../views/dashboard/home/Store"
+import { Navbar } from "../views/auth/components/Navbar"
+import { Container } from "react-bootstrap"
+import "bootstrap/dist/css/bootstrap.min.css"
 
 interface Context {
     dispatchUser?: any,
@@ -32,9 +35,18 @@ export function AppRouter(){
                 <Route path ='/auth' component={AuthRouter} />
                 <Route path ='/auth/register' component={Register} />
                 <Route path ='/03-forms/pages' component={RegisterPage} />
-                <Route path ='/dashboard/home' component={Home} />
                 <Route path ='/routes' component={Navigation} />
                 <Route path ='/auth/recover' component={Recover} />
+
+                {/*  Home router */}
+                
+                <Navbar />
+                    <Container className="mb-4">
+                        <Route path ='/dashboard/home' component={Home} />
+                        <Route path ='/dashboard/store' component={Store} />
+                        
+                    </Container>
+
 
                 <PrivateRouter 
                     loggedIn={user?.loggedIn}
