@@ -13,6 +13,8 @@ import { Store } from "../views/dashboard/home/Store"
 import { Navbar } from "../views/auth/components/Navbar"
 import { Container } from "react-bootstrap"
 import "bootstrap/dist/css/bootstrap.min.css"
+import { Profile } from "../views/dashboard/home/Profile"
+import { ReportHome } from "../views/dashboard/home/ReportHome"
 
 interface Context {
     dispatchUser?: any,
@@ -39,14 +41,20 @@ export function AppRouter(){
                 <Route path ='/auth/recover' component={Recover} />
 
                 {/*  Home router */}
-                
-                <Navbar />
+                {(user?.loggedIn || user) && (
+                    <>
+                    <Navbar />
                     <Container className="mb-4">
                         <Route path ='/dashboard/home' component={Home} />
-                        <Route path ='/dashboard/store' component={Store} />
+                        <Route path ='/store' component={Store} />
+                        <Route path ='/profile' component={Profile} />
+                        <Route path ='/report' component={ReportHome} />
                         
                     </Container>
+                    </>
 
+                )}
+                
 
                 <PrivateRouter 
                     loggedIn={user?.loggedIn}
