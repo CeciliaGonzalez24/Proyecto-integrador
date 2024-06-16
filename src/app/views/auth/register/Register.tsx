@@ -14,7 +14,6 @@ export const Register = () => {
 
     return(
         <div>
-          <h1> Registro de Usuario (prueba) </h1>
           
           <Formik
             initialValues={{
@@ -25,7 +24,10 @@ export const Register = () => {
               password2: ''
             }}
             onSubmit={( values) => {
-              console.log(values)
+              console.log(values);
+               // Guardar los datos en localStorage
+               localStorage.setItem('userProfile', JSON.stringify(values));
+              
               history.push("/dashboard/home");
             }}
             validationSchema={
@@ -100,7 +102,7 @@ export const Register = () => {
         </div>
 
         <div className="mt-3 mb-3 text-center">
-           <h6> Ya tienes una cuenta? </h6>
+           <h6> ¿Ya tienes una cuenta? </h6>
           <Link to="/auth/login">Iniciar Sesión</Link>
         </div>
       </Form>

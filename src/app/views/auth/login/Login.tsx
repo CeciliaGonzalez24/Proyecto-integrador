@@ -106,11 +106,11 @@ export function Login (){
         </div>
 
         <div className="mt-3 mb-3 text-center">
-          <Link to="/auth/recover">Olvidaste la contraseña?</Link>
+          <Link to="/auth/recover">¿Olvidaste la contraseña?</Link>
         </div>
 
         <div className="mt-3 mb-3 text-center">
-           <h6>No tienes una cuenta</h6>
+           <h6>¿No tienes una cuenta?</h6>
           <Link to="/auth/register">Registrar</Link>
         </div>
       </form>
