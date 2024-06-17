@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
-import { Col, Row, Form, Button, Card } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Row, Form, Button } from 'react-bootstrap';
+import { ProfileData } from './Profile'; 
+import { ServiceCard } from './Service/ServiceCard'; 
 
-interface Service {
+export interface Service {
     id: number;
     type: string;
     price: string;
     availability: string;
     summary: string;
+    email: string;
+    profileData: ProfileData;
 }
 
 const initialService: Service = {
@@ -14,20 +18,69 @@ const initialService: Service = {
     type: '',
     price: '',
     availability: '',
-    summary: ''
-    
+    summary: '',
+    email: '',
+    profileData: {
+        fullName: '',
+        address: '',
+        birthDate: '',
+        nationality: '',
+        gender: '',
+        otherData: '',
+        email: '',
+        name: '',
+        lastName: '',
+        region: '',
+        province: '',
+        commune: ''
+    }
 };
 
 export function Store() {
     const [services, setServices] = useState<Service[]>([]);
     const [newService, setNewService] = useState<Service>(initialService);
-    const [isEditing, setIsEditing] = useState<boolean>(false); // Estado para manejar la edición de servicios
+    const [isEditing, setIsEditing] = useState<boolean>(false);
+
+    const savedProfile = localStorage.getItem('userProfile');
+    const profileData: ProfileData = savedProfile ? JSON.parse(savedProfile) : {
+        fullName: '',
+        address: '',
+        birthDate: '',
+        nationality: '',
+        gender: '',
+        otherData: '',
+        email: '',
+        name: '',
+        lastName: '',
+        region: '',
+        province: '',
+        commune: ''
+    };
+
+    useEffect(() => {
+        const savedServices = localStorage.getItem('services');
+        if (savedServices) {
+            const parsedServices: Service[] = JSON.parse(savedServices);
+            const userServices = parsedServices.filter(service => service.email === profileData.email);
+            setServices(userServices);
+        }
+    }, [profileData.email]);
+
+    useEffect(() => {
+        const savedServices = localStorage.getItem('services');
+        if (savedServices) {
+            const parsedServices: Service[] = JSON.parse(savedServices);
+            const updatedServices = parsedServices.filter(service => service.email !== profileData.email).concat(services);
+            localStorage.setItem('services', JSON.stringify(updatedServices));
+        } else {
+            localStorage.setItem('services', JSON.stringify(services));
+        }
+    }, [services, profileData.email]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        // Validación para el campo de precio (aceptar solo números)
         if (name === 'price' && !(/^\d+$/.test(value))) {
-            return; // No actualiza el estado si no es un número
+            return;
         }
         setNewService({
             ...newService,
@@ -38,16 +91,21 @@ export function Store() {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (newService.type && newService.price && newService.availability && newService.summary) {
+            const serviceWithProfile: Service = {
+                ...newService,
+                id: isEditing ? newService.id : services.length + 1,
+                email: profileData.email,
+                profileData: { ...profileData }
+            };
+
             if (isEditing) {
-                // Actualizar el servicio existente si está en modo de edición
                 const updatedServices = services.map(service =>
-                    service.id === newService.id ? { ...newService } : service
+                    service.id === newService.id ? serviceWithProfile : service
                 );
                 setServices(updatedServices);
                 setIsEditing(false);
             } else {
-                // Agregar nuevo servicio
-                setServices([...services, { ...newService, id: services.length + 1 }]);
+                setServices([...services, serviceWithProfile]);
             }
             setNewService(initialService);
         } else {
@@ -75,51 +133,49 @@ export function Store() {
                     </p>
                     <Form onSubmit={handleSubmit}>
                         <Row className="mb-3">
-                            
-                                <Form.Group>
-                                    <Form.Label className="form-label"><strong>Tipo de Servicio</strong></Form.Label>
-                                    <Form.Control
-                                        className="form-control"
-                                        type="text"
-                                        name="type"
-                                        value={newService.type}
-                                        onChange={handleChange}
-                                        placeholder="Ej. Peluquería, Electricista, etc."
-                                        style={{ minWidth: '300px' }} // Ajuste de ancho mínimo
-                                    />
-                                </Form.Group>
-                            
-                            <Row md={4}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label className="form-label"><strong>Valor</strong></Form.Label>
-                                    <Form.Control
-                                        className="form-control"
-                                        type="text"
-                                        name="price"
-                                        value={newService.price}
-                                        onChange={handleChange}
-                                        placeholder="Ej. $50.000 CLP por hora"
-                                        style={{ minWidth: '300px' }} // Ajuste de ancho mínimo
-                                    />
-                                </Form.Group>
-                            </Row>
-                            <Row>
-                                <Form.Group className="mb-3">
-                                    <Form.Label className="form-label"><strong>Disponibilidad</strong></Form.Label>
-                                    <Form.Control
-                                        className="form-control"
-                                        type="text"
-                                        name="availability"
-                                        value={newService.availability}
-                                        onChange={handleChange}
-                                        placeholder="Ej. Lunes a Viernes, 9am - 5pm"
-                                        style={{ minWidth: '300px' }} // Ajuste de ancho mínimo
-                                    />
-                                </Form.Group>
-                            </Row>
+                            <Form.Group>
+                                <Form.Label className="form-label"><strong>Tipo de Servicio</strong></Form.Label>
+                                <Form.Control
+                                    className="form-control"
+                                    type="text"
+                                    name="type"
+                                    value={newService.type}
+                                    onChange={handleChange}
+                                    placeholder="Ej. Peluquería, Electricista, etc."
+                                    style={{ minWidth: '300px' }}
+                                />
+                            </Form.Group>
+                        </Row>
+                        <Row>
+                            <Form.Group className="mb-3">
+                                <Form.Label className="form-label"><strong>Valor</strong></Form.Label>
+                                <Form.Control
+                                    className="form-control"
+                                    type="text"
+                                    name="price"
+                                    value={newService.price}
+                                    onChange={handleChange}
+                                    placeholder="Ej. $50.000 CLP por hora"
+                                    style={{ minWidth: '300px' }}
+                                />
+                            </Form.Group>
+                        </Row>
+                        <Row>
+                            <Form.Group className="mb-3">
+                                <Form.Label className="form-label"><strong>Disponibilidad</strong></Form.Label>
+                                <Form.Control
+                                    className="form-control"
+                                    type="text"
+                                    name="availability"
+                                    value={newService.availability}
+                                    onChange={handleChange}
+                                    placeholder="Ej. Lunes a Viernes, 9am - 5pm"
+                                    style={{ minWidth: '300px' }}
+                                />
+                            </Form.Group>
                         </Row>
                         <Form.Group className="mb-3">
-                            <Form.Label className="form-label"><strong>Resumen del Servicio</strong></Form.Label>
+                            <Form.Label className="form-label"><strong>Descripción del Servicio</strong></Form.Label>
                             <Form.Control
                                 className="form-control"
                                 as="textarea"
@@ -127,10 +183,11 @@ export function Store() {
                                 name="summary"
                                 value={newService.summary}
                                 onChange={handleChange}
-                                placeholder="Descripción breve del servicio que ofreces..."
-                                style={{ minWidth: '600px' }} // Ajuste de ancho mínimo
+                                placeholder="Descripción del servicio que ofreces..."
+                                style={{ minWidth: '600px' }}
                             />
                         </Form.Group>
+
                         <div className="d-grid gap-2">
                             {!isEditing ? (
                                 <Button type="submit" className="btn btn-primary">
@@ -149,32 +206,12 @@ export function Store() {
             {services.length > 0 && (
                 <div className="row mt-5">
                     {services.map((service) => (
-                        <div key={service.id} className="col-md-4 mb-4">
-                            <Card>
-                                <Card.Body>
-                                    <h5 className="card-title">{service.type}</h5>
-                                    <p className="card-text"><strong>Valor:</strong> {service.price}</p>
-                                    <p className="card-text"><strong>Disponibilidad:</strong> {service.availability}</p>
-                                    <p className="card-text">{service.summary}</p>
-                                    <div className="d-grid gap-2">
-                                        <Button
-                                            type="button"
-                                            className="btn btn-primary"
-                                            onClick={() => handleEdit(service)}
-                                        >
-                                            Editar
-                                        </Button>
-                                        <Button
-                                            type="button"
-                                            className="btn btn-danger"
-                                            onClick={() => handleDelete(service.id)}
-                                        >
-                                            Eliminar
-                                        </Button>
-                                    </div>
-                                </Card.Body>
-                            </Card>
-                        </div>
+                        <ServiceCard
+                            key={service.id}
+                            service={service}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                        />
                     ))}
                 </div>
             )}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
 import { chileData } from './Service/chileData';
 
-interface ProfileData {
+export interface ProfileData {
     fullName: string;
     address: string;
     birthDate: string;
@@ -16,6 +16,7 @@ interface ProfileData {
     province: string;
     commune: string;
 }
+
 
 export function Profile() {
     const [profileData, setProfileData] = useState<ProfileData>({
@@ -32,6 +33,7 @@ export function Profile() {
         province: '',
         commune: ''
     });
+
 
     const [provinces, setProvinces] = useState<string[]>([]);
     const [communes, setCommunes] = useState<string[]>([]);
@@ -185,9 +187,9 @@ export function Profile() {
                                                 required
                                             >
                                                 <option value="">Seleccionar</option>
-                                                <option value="male">Masculino</option>
-                                                <option value="female">Femenino</option>
-                                                <option value="other">Otro</option>
+                                                <option value="Masculino">Masculino</option>
+                                                <option value="Femenino">Femenino</option>
+                                                <option value="Otro">Otro</option>
                                             </Form.Control>
                                         </Form.Group>
                                     </Col>
@@ -263,6 +265,7 @@ export function Profile() {
                                                 name="otherData"
                                                 value={profileData.otherData}
                                                 onChange={handleChange}
+                                                
                                             />
                                         </Form.Group>
                                     </Col>
