@@ -15,6 +15,7 @@ import { Container } from "react-bootstrap"
 import "bootstrap/dist/css/bootstrap.min.css"
 import { Profile } from "../views/dashboard/home/Profile"
 import { ReportHome } from "../views/dashboard/home/ReportHome"
+import { Reservation } from "../views/dashboard/home/Reservation"
 
 interface Context {
     dispatchUser?: any,
@@ -49,6 +50,7 @@ export function AppRouter(){
                         <Route path ='/store' component={Store} />
                         <Route path ='/profile' component={Profile} />
                         <Route path ='/report' component={ReportHome} />
+                        <Route path ='/reservation' component={Reservation} />
                         
                     </Container>
                     </>

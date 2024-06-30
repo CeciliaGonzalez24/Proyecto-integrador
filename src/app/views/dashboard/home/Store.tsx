@@ -160,7 +160,7 @@ export function Store() {
                                 />
                             </Form.Group>
                         </Row>
-                        <Row>
+                        {/* <Row>
                             <Form.Group className="mb-3">
                                 <Form.Label className="form-label"><strong>Disponibilidad</strong></Form.Label>
                                 <Form.Control
@@ -173,7 +173,7 @@ export function Store() {
                                     style={{ minWidth: '300px' }}
                                 />
                             </Form.Group>
-                        </Row>
+                        </Row> */}
                         <Form.Group className="mb-3">
                             <Form.Label className="form-label"><strong>Descripción del Servicio</strong></Form.Label>
                             <Form.Control

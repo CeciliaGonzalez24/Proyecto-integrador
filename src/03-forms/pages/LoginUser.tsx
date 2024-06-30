@@ -14,7 +14,7 @@ export const LoginUser = () => {
         </Route>
     }
 
-
+    
     return (
         <div>
             <h1>Iniciar Sesión</h1>
