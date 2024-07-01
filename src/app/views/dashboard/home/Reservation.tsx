@@ -3,65 +3,137 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import esLocale from '@fullcalendar/core/locales/es';
-import { DateSelectArg, EventApi, EventInput } from '@fullcalendar/core';
-
-export function Reservation() {
-    const [events, setEvents] = useState<EventInput[]>([]);
-
-    const handleDateSelect = (selectInfo: DateSelectArg) => {
-        let calendarApi = selectInfo.view.calendar;
-        calendarApi.unselect(); // clear date selection
-
-        const title = prompt('Ingrese el título de la reserva:');
-        if (title) {
-            const newEvent = {
-                id: String(events.length + 1),
-                title,
-                start: selectInfo.startStr,
-                end: selectInfo.endStr
-            };
-            setEvents([...events, newEvent]);
-        }
-    };
-
-    const handleEventClick = (clickInfo: { event: EventApi }) => {
-        if (window.confirm(`¿Está seguro de que desea eliminar la reserva '${clickInfo.event.title}'?`)) {
-            clickInfo.event.remove();
-            setEvents(events.filter(event => event.id !== clickInfo.event.id));
-        }
-    };
+import styled from 'styled-components';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Button,
+  MenuItem,
+} from '@mui/material';
 
 
+const Container = styled.div`
+  padding: 16px;
+`;
 
-    return (
-        <div className="calendar-container">
-            <h1>Reservas</h1>
-            <FullCalendar
-                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                initialView="timeGridWeek"
-                selectable={true}
-                select={handleDateSelect}
-                events={events}
-                eventClick={handleEventClick}
-                slotMinTime="09:00:00"
-                slotMaxTime="17:00:00"
-                allDaySlot={false}
-                height="auto"
-                contentHeight="auto"
-                expandRows={true}
-                locale={esLocale}
-                slotDuration="01:00:00"
-                weekends={false}
-                dayHeaderFormat={{ weekday: 'short' }}
-                eventTimeFormat={{ hour: 'numeric', minute: '2-digit', meridiem: 'short' }}
-                windowResizeDelay={10}
-                headerToolbar={{
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'timeGridWeek,timeGridDay'
-                }}
-            />
-        </div>
-    );
-}
+const Header = styled.header`
+  background-color: #282c34;
+  min-height: 10vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+`;
+
+const CalendarContainer = styled.div`
+  margin: 0 auto;
+  max-width: none; 
+`;
+
+const Reservation: React.FC = () => {
+  const [open, setOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<{ date: string; time: string } | null>(null);
+  const [name, setName] = useState('');
+  const [service, setService] = useState('');
+  const services = ['Peluquería', 'Barbería']; //aqui se añaden las opciones de categorias de servicios
+
+  const handleDateClick = (arg: any) => {
+    setSelectedDate({
+      date: arg.dateStr,
+      time: arg.date.getHours() + ':' + arg.date.getMinutes(),
+    });
+    setOpen(true);
+  };
+
+  const handleEventClick = (clickInfo: any) => {
+    alert(`Evento: ${clickInfo.event.title}`);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setName('');
+    setService('');
+  };
+
+  const handleSave = () => {
+    console.log('Reserva guardada:', { name, service, selectedDate });
+    handleClose();
+  };
+
+  return (
+    <Container>
+      <Header>
+        <h1>Reserva de Servicios</h1>
+      </Header>
+      <CalendarContainer>
+        <FullCalendar
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          initialView="timeGridWeek"
+          dateClick={handleDateClick}
+          eventClick={handleEventClick}
+          slotMinTime="08:00:00"
+          slotMaxTime="17:00:00"
+          slotDuration="01:00:00"
+          hiddenDays={[0, 6]}
+          contentHeight="auto"
+          allDaySlot={false}
+          headerToolbar={{
+            left: 'prev,next today',
+            center: 'title',
+            right: 'timeGridWeek,timeGridDay'
+          }}
+          eventContent={renderEventContent}
+          eventBackgroundColor="#1976d2"
+          eventBorderColor="#1976d2"
+          eventTextColor="#ffffff"
+        />
+      </CalendarContainer>
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Reserva de Servicio</DialogTitle>
+        <DialogContent>
+          
+          <TextField
+            select
+            margin="dense"
+            label="Catergoría de Servicio"
+            fullWidth
+            value={service}
+            onChange={(e) => setService(e.target.value)}
+          >
+            {services.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleSave} color="primary">
+            Guardar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
+  );
+};
+
+
+const renderEventContent = (eventInfo: any) => {
+  return (
+    <>
+      <b>{eventInfo.timeText}</b>
+      <i>{eventInfo.event.title}</i>
+    </>
+  );
+};
+
+export default Reservation;
