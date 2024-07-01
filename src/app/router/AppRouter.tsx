@@ -36,7 +36,7 @@ export function AppRouter(){
             <Switch>
                 <Route path ='/auth' component={AuthRouter} />
                 <Route path ='/auth/register' component={Register} />
-                <Route path ='/03-forms/pages' component={RegisterPage} />
+                {/* <Route path ='/03-forms/pages' component={RegisterPage} /> */}
                 <Route path ='/routes' component={Navigation} />
                 <Route path ='/auth/recover' component={Recover} />
 
