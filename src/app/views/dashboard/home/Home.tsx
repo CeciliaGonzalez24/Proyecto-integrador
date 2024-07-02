@@ -18,7 +18,7 @@ export function Home() {
     };
 
     const filteredServices = services.filter(service => 
-        service.type.toLowerCase().includes(searchTerm.toLowerCase())
+        service.type && service.type.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (

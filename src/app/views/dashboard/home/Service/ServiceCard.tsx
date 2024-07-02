@@ -5,7 +5,7 @@ import { Service } from '../Store';
 interface ServiceCardProps {
     service: Service;
     onEdit?: (service: Service) => void;
-    onDelete?: (id: number) => void;
+    onDelete?: (id: string) => void;
 }
 
 export function ServiceCard({ service, onEdit, onDelete }: ServiceCardProps) {

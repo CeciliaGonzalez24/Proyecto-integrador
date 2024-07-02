@@ -1,6 +1,6 @@
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { Login } from './login/Login';
-import { Register } from './register/Register';
+import  Register from './register/Register';
 
 
 export function AuthRouter(){

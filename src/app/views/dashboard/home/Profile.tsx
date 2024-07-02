@@ -4,6 +4,7 @@ import { chileData } from './Service/chileData';
 
 export interface ProfileData {
     fullName: string;
+    id:string;
     address: string;
     birthDate: string;
     nationality: string;
@@ -21,6 +22,7 @@ export interface ProfileData {
 export function Profile() {
     const [profileData, setProfileData] = useState<ProfileData>({
         fullName: '',
+        id: '',
         address: '',
         birthDate: '',
         nationality: '',
@@ -48,12 +50,10 @@ export function Profile() {
     useEffect(() => {
         if (profileData.region) {
             setProvinces(Object.keys(chileData[profileData.region]));
-            // Al cambiar de región, si la provincia seleccionada ya no es válida, resetea a vacío
             if (!Object.keys(chileData[profileData.region]).includes(profileData.province)) {
                 setProfileData(prevState => ({ ...prevState, province: '', commune: '' }));
             } else {
                 setCommunes(chileData[profileData.region][profileData.province]);
-                // Si la comuna seleccionada no está en la lista actual, resetea a vacío
                 if (!chileData[profileData.region][profileData.province].includes(profileData.commune)) {
                     setProfileData(prevState => ({ ...prevState, commune: '' }));
                 }
@@ -64,7 +64,6 @@ export function Profile() {
     useEffect(() => {
         if (profileData.region && profileData.province) {
             setCommunes(chileData[profileData.region][profileData.province]);
-            // Si la comuna seleccionada no está en la lista actual, resetea a vacío
             if (!chileData[profileData.region][profileData.province].includes(profileData.commune)) {
                 setProfileData(prevState => ({ ...prevState, commune: '' }));
             }
