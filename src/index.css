@@ -32,25 +32,6 @@ code {
   gap: 10px;
 }
 
-.service-detail-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.service-info, .image-gallery {
-  flex: 1;
-}
-
-.image-gallery {
-  max-width: 50%; /* Puedes ajustar el ancho según tus necesidades */
-  padding-left: 20px; /* Espaciado entre las columnas */
-}
-
-.service-info {
-  max-width: 50%; /* Puedes ajustar el ancho según tus necesidades */
-}
-
 .image-gallery img {
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
