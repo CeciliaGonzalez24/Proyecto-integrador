@@ -6,9 +6,7 @@ import { AuthContext } from '../views/store/contexts/AuthContext';
 import { PrivateRouter } from './PrivateRouter';
 import { DashboardRouter } from '../views/dashboard/DashboardRouter';
 import { Register } from '../views/auth/register/Register';
-import { RegisterPage } from '../../03-forms/pages';
 import { Home } from '../views/dashboard/home/Home';
-import { Navigation } from '../../routes/Navigation';
 import { Recover } from '../views/auth/recover/Recover';
 import { Store } from '../views/dashboard/home/Store';
 import { Navbar } from '../views/auth/components/Navbar';
@@ -40,7 +38,6 @@ export function AppRouter() {
                 
                 <Route path ='/auth' component={AuthRouter} />
                 <Route path ='/auth/register' component={Register} />
-                <Route path ='/routes' component={Navigation} />
                 <Route path ='/auth/recover' component={Recover} />
 
 
