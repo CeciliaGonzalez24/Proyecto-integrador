@@ -20,6 +20,9 @@ export function Navbar(){
                 <Nav.Link to="/report" as={NavLink}>
                     Reportes
                 </Nav.Link>
+                <Nav.Link to="/reservation" as={NavLink}>
+                    Reservas para los clientes
+                </Nav.Link>
 
                 <Nav.Link to="/auth/login" as={NavLink}>
                     Cerrar Sesión

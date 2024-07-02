@@ -1,21 +1,30 @@
 import React from 'react';
-import { Card, Button } from 'react-bootstrap';
-import { Service } from '../Store'; 
+import { Service } from '../Store';
+import { Button } from 'react-bootstrap';
 
 interface ServiceCardProps {
     service: Service;
-    onEdit?: (service: Service) => void;
-    onDelete?: (id: number) => void;
+    onEdit: (service: Service) => void;
+    onDelete: (id: number) => void;
+    onRequest: (id: number) => void;  // Nueva propiedad para manejar solicitudes
+
 }
 
-export function ServiceCard({ service, onEdit, onDelete }: ServiceCardProps) {
+export function ServiceCard({ service, onEdit, onDelete, onRequest }: ServiceCardProps) {
     return (
         <div className="col-md-4 mb-4">
-            <Card>
-                <Card.Body>
+            <div className="card">
+                <div className="card-body">
+                    {service.images.length > 0 && (
+                        <img
+                            src={service.images[0]} // Show the first image
+                            alt="Service Image"
+                            className="card-img-top"
+                            style={{ maxHeight: '150px', objectFit: 'cover' }}
+                        />
+                    )}
                     <h5 className="card-title">{service.type}</h5>
                     <p className="card-text"><strong>Valor:</strong> {service.price}</p>
-                    <p className="card-text"><strong>Disponibilidad:</strong> {service.availability}</p>
                     <p className="card-text">{service.summary}</p>
                     {service.profileData.name && (
                         <div>
@@ -25,6 +34,8 @@ export function ServiceCard({ service, onEdit, onDelete }: ServiceCardProps) {
                             <p><strong>Género:</strong> {service.profileData.gender}</p>
                         </div>
                     )}
+                    <p className="card-text">Solicitudes: {service.requestCount}</p>  {/* Mostrar el conteo de solicitudes */}
+                    <button className="btn btn-primary" onClick={() => onRequest(service.id)}>Solicitar</button>  {/* Botón para solicitar el servicio */}
                     {onEdit && onDelete && (
                         <div className="d-grid gap-2">
                             <Button
@@ -43,8 +54,8 @@ export function ServiceCard({ service, onEdit, onDelete }: ServiceCardProps) {
                             </Button>
                         </div>
                     )}
-                </Card.Body>
-            </Card>
+                </div>
+            </div>
         </div>
     );
 }

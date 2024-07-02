@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Navbar, Nav, Form, FormControl, Container, Row, Col } from 'react-bootstrap';
-import { Service } from './Store'; 
+import React, { Suspense, useEffect, useState } from 'react';
+import { Card, Navbar, Nav, Form, FormControl, Container, Row, Col, Button } from 'react-bootstrap';
+import { Service, Store } from './Store'; 
+import { s } from '@fullcalendar/core/internal-common';
+import { useHistory } from 'react-router-dom';
 
 export function Home() {
     const [services, setServices] = useState<Service[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const history = useHistory();
 
     useEffect(() => {
         const savedServices = localStorage.getItem('services');
@@ -16,6 +19,11 @@ export function Home() {
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
     };
+
+    const handleServiceClick = (serviceType: string) => {
+        history.push(`/ServiceDetail/${serviceType}`);
+    };
+     
 
     const filteredServices = services.filter(service => 
         service.type.toLowerCase().includes(searchTerm.toLowerCase())
@@ -44,11 +52,10 @@ export function Home() {
                     <Row className="mt-5">
                         {filteredServices.map((service) => (
                             <Col key={service.id} md={4} className="mb-4">
-                                <Card>
+                                <Card >
                                     <Card.Body>
-                                        <h5 className="card-title">{service.type}</h5>
+                                       <h5 className="card-title">{service.type}</h5>
                                         <p className="card-text"><strong>Valor:</strong> {service.price}</p>
-                                        <p className="card-text"><strong>Disponibilidad:</strong> {service.availability}</p>
                                         <p className="card-text">{service.summary}</p>
                                         {service.profileData.name && (
                                             <div>
@@ -58,6 +65,8 @@ export function Home() {
                                                 <p><strong>Género:</strong> {service.profileData.gender}</p>
                                             </div>
                                         )}
+                                        <Button variant ='primary' onClick={() => handleServiceClick(service.type)}>Ver Detalle</Button>
+
                                     </Card.Body>
                                 </Card>
                             </Col>

@@ -7,17 +7,18 @@ export interface Service {
     id: number;
     type: string;
     price: string;
-    availability: string;
     summary: string;
     email: string;
     profileData: ProfileData;
+    images: string[]; 
+    requestCount: number;  // Nueva propiedad para contar las solicitudes
+
 }
 
 const initialService: Service = {
     id: 1,
     type: '',
     price: '',
-    availability: '',
     summary: '',
     email: '',
     profileData: {
@@ -33,13 +34,17 @@ const initialService: Service = {
         region: '',
         province: '',
         commune: ''
-    }
+    },
+    images: [],
+    requestCount: 0  // Inicializa el contador de solicitudes
+
 };
 
 export function Store() {
     const [services, setServices] = useState<Service[]>([]);
     const [newService, setNewService] = useState<Service>(initialService);
     const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [imageFiles, setImageFiles] = useState<File[]>([]);
 
     const savedProfile = localStorage.getItem('userProfile');
     const profileData: ProfileData = savedProfile ? JSON.parse(savedProfile) : {
@@ -88,14 +93,24 @@ export function Store() {
         });
     };
 
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files) {
+            setImageFiles(Array.from(files));
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (newService.type && newService.price && newService.availability && newService.summary) {
+        if (newService.type && newService.price && newService.summary) {
             const serviceWithProfile: Service = {
                 ...newService,
                 id: isEditing ? newService.id : services.length + 1,
                 email: profileData.email,
-                profileData: { ...profileData }
+                profileData: { ...profileData },
+                images: imageFiles.map(file => URL.createObjectURL(file)), // Create object URLs for the images
+                requestCount: newService.requestCount  // Mantener el conteo de solicitudes
+
             };
 
             if (isEditing) {
@@ -108,14 +123,23 @@ export function Store() {
                 setServices([...services, serviceWithProfile]);
             }
             setNewService(initialService);
+            setImageFiles([]);
         } else {
             alert('Por favor completa todos los campos.');
         }
     };
 
+    const handleRequest = (id: number) => {
+        const updatedServices = services.map(service =>
+            service.id === id ? { ...service, requestCount: service.requestCount + 1 } : service
+        );
+        setServices(updatedServices);
+    };
+
     const handleEdit = (service: Service) => {
         setNewService(service);
         setIsEditing(true);
+        setImageFiles([]); // Clear image files on edit
     };
 
     const handleDelete = (id: number) => {
@@ -160,20 +184,7 @@ export function Store() {
                                 />
                             </Form.Group>
                         </Row>
-                        <Row>
-                            <Form.Group className="mb-3">
-                                <Form.Label className="form-label"><strong>Disponibilidad</strong></Form.Label>
-                                <Form.Control
-                                    className="form-control"
-                                    type="text"
-                                    name="availability"
-                                    value={newService.availability}
-                                    onChange={handleChange}
-                                    placeholder="Ej. Lunes a Viernes, 9am - 5pm"
-                                    style={{ minWidth: '300px' }}
-                                />
-                            </Form.Group>
-                        </Row>
+                    
                         <Form.Group className="mb-3">
                             <Form.Label className="form-label"><strong>Descripción del Servicio</strong></Form.Label>
                             <Form.Control
@@ -185,6 +196,16 @@ export function Store() {
                                 onChange={handleChange}
                                 placeholder="Descripción del servicio que ofreces..."
                                 style={{ minWidth: '600px' }}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label className="form-label"><strong>Imágenes del Servicio</strong></Form.Label>
+                            <Form.Control
+                                className="form-control"
+                                type="file"
+                                multiple
+                                onChange={handleImageChange}
                             />
                         </Form.Group>
 
@@ -211,6 +232,8 @@ export function Store() {
                             service={service}
                             onEdit={handleEdit}
                             onDelete={handleDelete}
+                            onRequest={handleRequest}  // Pasa la nueva función
+
                         />
                     ))}
                 </div>
