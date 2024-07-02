@@ -51,6 +51,7 @@ export function AppRouter() {
                                 <Route path='/profile' component={Profile} />
                                 <Route path='/report' component={ReportHome} />
                                 <Route path='/reservation' component={Reservation} />
+                                <Route path="/reservar" component={Reservation} />
                                 <Route path="/ServiceDetail/:type" component={ServiceDetail} />
                                 </Container>
                         </>

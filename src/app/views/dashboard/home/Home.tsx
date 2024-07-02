@@ -93,7 +93,6 @@ export function Home() {
                                             </div>
                                         )}
                                         <Button variant='primary' onClick={() => handleServiceClick(service.type)}>Ver Detalle</Button>
-                                        <Button variant='primary' onClick={() => handleServiceClick(service.type)}>Ver Detalle</Button>
                                     </Card.Body>
                                 </Card>
                             </Col>

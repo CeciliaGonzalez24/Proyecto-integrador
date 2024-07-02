@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { Service } from '../Store'; // Asegúrate de importar correctamente tu tipo de servicio
 import './ServiceDetail.css'; // Asegúrate de importar tu archivo CSS
 
@@ -10,6 +10,7 @@ interface Review {
 
 export function ServiceDetail() {
     const { type } = useParams<{ type: string }>(); // Obtener el parámetro type de la URL
+    const history = useHistory(); // Hook para redirigir
     const services: Service[] = JSON.parse(localStorage.getItem('services') || '[]');
     const service = services.find(s => s.type.toLowerCase() === type.toLowerCase()); // Buscar el servicio por type
 
@@ -42,8 +43,13 @@ export function ServiceDetail() {
     };
 
     const handleHireClick = () => {
-        // Aquí puedes añadir la lógica para manejar el clic en el botón "Contratar"
-        console.log("Botón 'Contratar' clickeado");
+        // Redirigir a la página de reservas
+        history.push('/reservation'); // Aquí debes asegurarte de que la ruta sea correcta
+    };
+
+    const handleChatClick = () => {
+        // Aquí puedes añadir la lógica para manejar el clic en el botón "Chat"
+        console.log("Botón 'Chat' clickeado");
     };
 
     if (!service) {
@@ -72,6 +78,14 @@ export function ServiceDetail() {
                     >
                         Contratar
                     </button>
+
+                    <button 
+                        className="btn btn-primary mb-4" 
+                        onClick={handleChatClick}
+                    >
+                        Chat
+                    </button>
+
                     <h2>Reseñas</h2>
                     <form onSubmit={handleReviewSubmit}>
                         <div className="form-group">

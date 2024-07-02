@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -13,7 +14,6 @@ import {
   Button,
   MenuItem,
 } from '@mui/material';
-
 
 const Container = styled.div`
   padding: 16px;
@@ -36,11 +36,15 @@ const CalendarContainer = styled.div`
 `;
 
 const Reservation: React.FC = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const serviceType = queryParams.get('serviceType') || '';
+
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<{ date: string; time: string } | null>(null);
   const [name, setName] = useState('');
-  const [service, setService] = useState('');
-  const services = ['Peluquería', 'Barbería']; //aqui se añaden las opciones de categorias de servicios
+  const [service, setService] = useState(serviceType);
+  const services = ['Peluquería', 'Barbería']; // Aquí se añaden las opciones de categorías de servicios
 
   const handleDateClick = (arg: any) => {
     setSelectedDate({
@@ -57,7 +61,7 @@ const Reservation: React.FC = () => {
   const handleClose = () => {
     setOpen(false);
     setName('');
-    setService('');
+    setService(serviceType);
   };
 
   const handleSave = () => {
@@ -97,11 +101,10 @@ const Reservation: React.FC = () => {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Reserva de Servicio</DialogTitle>
         <DialogContent>
-          
           <TextField
             select
             margin="dense"
-            label="Catergoría de Servicio"
+            label="Categoría de Servicio"
             fullWidth
             value={service}
             onChange={(e) => setService(e.target.value)}
@@ -125,7 +128,6 @@ const Reservation: React.FC = () => {
     </Container>
   );
 };
-
 
 const renderEventContent = (eventInfo: any) => {
   return (
