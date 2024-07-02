@@ -1,0 +1,37 @@
+.service-detail-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.service-info, .image-gallery {
+    flex: 1;
+}
+
+.image-gallery {
+    max-width: 50%; /* Puedes ajustar el ancho según tus necesidades */
+    padding-left: 20px; /* Espaciado entre las columnas */
+}
+
+.service-info {
+    max-width: 50%; /* Puedes ajustar el ancho según tus necesidades */
+}
+
+.service-detail-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.service-info, .image-gallery {
+    flex: 1;
+}
+
+.image-gallery {
+    max-width: 50%; /* Puedes ajustar el ancho según tus necesidades */
+    padding-left: 20px; /* Espaciado entre las columnas */
+}
+
+.service-info {
+    max-width: 50%; /* Puedes ajustar el ancho según tus necesidades */
+}

@@ -12,7 +12,6 @@ export interface Service {
     profileData: ProfileData;
     images: string[]; 
     requestCount: number;  // Nueva propiedad para contar las solicitudes
-
 }
 
 const initialService: Service = {
@@ -37,7 +36,13 @@ const initialService: Service = {
     },
     images: [],
     requestCount: 0  // Inicializa el contador de solicitudes
+};
 
+const getNextServiceId = () => {
+    const currentId = localStorage.getItem('serviceIdCounter');
+    const nextId = currentId ? parseInt(currentId) + 1 : 1;
+    localStorage.setItem('serviceIdCounter', nextId.toString());
+    return nextId;
 };
 
 export function Store() {
@@ -105,12 +110,11 @@ export function Store() {
         if (newService.type && newService.price && newService.summary) {
             const serviceWithProfile: Service = {
                 ...newService,
-                id: isEditing ? newService.id : services.length + 1,
+                id: isEditing ? newService.id : getNextServiceId(),
                 email: profileData.email,
                 profileData: { ...profileData },
                 images: imageFiles.map(file => URL.createObjectURL(file)), // Create object URLs for the images
                 requestCount: newService.requestCount  // Mantener el conteo de solicitudes
-
             };
 
             if (isEditing) {
@@ -233,7 +237,6 @@ export function Store() {
                             onEdit={handleEdit}
                             onDelete={handleDelete}
                             onRequest={handleRequest}  // Pasa la nueva función
-
                         />
                     ))}
                 </div>
