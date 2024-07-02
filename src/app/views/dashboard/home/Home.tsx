@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, Navbar, Form, FormControl, Container, Row, Col, Button } from 'react-bootstrap';
 import { Service } from './Store'; 
@@ -21,7 +22,7 @@ export function Home() {
     };
 
     const handleServiceClick = (type: string) => {
-        history.push(`/ServiceDetail/${type}`);
+        history.push(`/ServiceDetail/${type}`); // Convertimos el id a string
     };
 
     const filteredServices = services.filter(service => 
@@ -79,8 +80,9 @@ export function Home() {
                     <Row className="mt-5">
                         {filteredServices.map((service) => (
                             <Col key={service.id} md={4} className="mb-4">
-                                <Card className="service-card">
+                                <Card >
                                     <Card.Body>
+                                        <h5 className="card-title">{service.type}</h5>
                                         <h5 className="card-title">{service.type}</h5>
                                         <p className="card-text"><strong>Valor:</strong> {service.price}</p>
                                         <p className="card-text">{service.summary}</p>
@@ -90,6 +92,7 @@ export function Home() {
                                                 <p><strong>Región:</strong> {service.profileData.region}</p>
                                             </div>
                                         )}
+                                        <Button variant='primary' onClick={() => handleServiceClick(service.type)}>Ver Detalle</Button>
                                         <Button variant='primary' onClick={() => handleServiceClick(service.type)}>Ver Detalle</Button>
                                     </Card.Body>
                                 </Card>
