@@ -2,23 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Service } from '../Store'; // Asegúrate de importar correctamente tu tipo de servicio
 
-const services: Service[] = JSON.parse(localStorage.getItem('services') || '[]');
-
 interface Review {
     userName: string;
     content: string;
 }
 
 export function ServiceDetail() {
-    const { serviceType } = useParams<{ serviceType: string }>();
-    const service = services.find(s => s.type.toLowerCase() === serviceType.toLowerCase());
+    const { type } = useParams<{ type: string }>(); // Obtener el parámetro type de la URL
+    const services: Service[] = JSON.parse(localStorage.getItem('services') || '[]');
+    const service = services.find(s => s.type.toLowerCase() === type.toLowerCase()); // Buscar el servicio por type
 
     const [reviews, setReviews] = useState<Review[]>([]);
     const [newReview, setNewReview] = useState<string>('');
     const [userName, setUserName] = useState<string>('');
 
     useEffect(() => {
-        // Get the current user's name from localStorage
+        // Obtener el nombre del usuario actual de localStorage
         const savedProfile = localStorage.getItem('userProfile');
         const profileData = savedProfile ? JSON.parse(savedProfile) : null;
         setUserName(profileData?.name || '');
@@ -31,14 +30,14 @@ export function ServiceDetail() {
     }, []);
 
     const handleReviewSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      if (newReview.trim() && userName.trim()) {
-          const newReviews = [...reviews, { userName, content: newReview }];
-          setReviews(newReviews);
-          setNewReview('');
-          // Save reviews to localStorage
-          localStorage.setItem('reviews', JSON.stringify(newReviews));
-      }
+        e.preventDefault();
+        if (newReview.trim() && userName.trim()) {
+            const newReviews = [...reviews, { userName, content: newReview }];
+            setReviews(newReviews);
+            setNewReview('');
+            // Guardar las reseñas en localStorage
+            localStorage.setItem('reviews', JSON.stringify(newReviews));
+        }
     };
 
     if (!service) {
