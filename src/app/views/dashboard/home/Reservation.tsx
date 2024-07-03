@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -12,6 +12,7 @@ import {
   DialogTitle,
   TextField,
   Button,
+  MenuItem,
 } from '@mui/material';
 
 const Container = styled.div`
@@ -19,7 +20,7 @@ const Container = styled.div`
 `;
 
 const Header = styled.header`
-  background-color: #007bff;
+  background-color: #282c34;
   min-height: 10vh;
   display: flex;
   flex-direction: column;
@@ -34,43 +35,38 @@ const CalendarContainer = styled.div`
   max-width: none; 
 `;
 
-interface ReservationProps {
-  serviceType: string;
-  userName: string;
-}
-
-const Reservation: React.FC<ReservationProps> = ({ serviceType, userName }) => {
-  const history = useHistory();
+const Reservation: React.FC = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const serviceType = queryParams.get('serviceType') || '';
 
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<{ date: string; time: string } | null>(null);
-  const [name, setName] = useState(userName);
-  const service = serviceType;
-  const services = [serviceType]; // Solo una opción que es el tipo de servicio contratado
+  const [name, setName] = useState('');
+  const [service, setService] = useState(serviceType);
+  const services = ['Peluquería', 'Barbería']; // Aquí se añaden las opciones de categorías de servicios
 
   const handleDateClick = (arg: any) => {
     setSelectedDate({
       date: arg.dateStr,
-      time: `${arg.date.getHours()}:${arg.date.getMinutes()}`,
+      time: arg.date.getHours() + ':' + arg.date.getMinutes(),
     });
     setOpen(true);
   };
 
+  const handleEventClick = (clickInfo: any) => {
+    alert(`Evento: ${clickInfo.event.title}`);
+  };
+
   const handleClose = () => {
     setOpen(false);
-    setName(userName);
+    setName('');
+    setService(serviceType);
   };
 
   const handleSave = () => {
-    if (selectedDate) {
-      // Aquí puedes agregar lógica para guardar la reserva
-      console.log('Reserva guardada:', { selectedDate });
-      // Por ejemplo, podrías redirigir al usuario a una página de confirmación
-      history.push('/reservationConfirmation'); // Ajusta la ruta según tu estructura de rutas
-      handleClose();
-    } else {
-      alert('Por favor completa todos los campos.');
-    }
+    console.log('Reserva guardada:', { name, service, selectedDate });
+    handleClose();
   };
 
   return (
@@ -83,6 +79,7 @@ const Reservation: React.FC<ReservationProps> = ({ serviceType, userName }) => {
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="timeGridWeek"
           dateClick={handleDateClick}
+          eventClick={handleEventClick}
           slotMinTime="08:00:00"
           slotMaxTime="17:00:00"
           slotDuration="01:00:00"
@@ -105,13 +102,19 @@ const Reservation: React.FC<ReservationProps> = ({ serviceType, userName }) => {
         <DialogTitle>Reserva de Servicio</DialogTitle>
         <DialogContent>
           <TextField
+            select
             margin="dense"
-            label="Fecha y Hora"
-            type="text"
+            label="Categoría de Servicio"
             fullWidth
-            value={selectedDate ? `${selectedDate.date} ${selectedDate.time}` : ''}
-            disabled
-          />
+            value={service}
+            onChange={(e) => setService(e.target.value)}
+          >
+            {services.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">

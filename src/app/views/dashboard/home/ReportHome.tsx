@@ -1,53 +1,51 @@
-import React, { useEffect, useState } from 'react';
-import { Service } from './Store'; // Importa el tipo Service
-import { ProfileData } from './Profile'; // Importa el tipo ProfileData
-import { ServiceCardReport } from '../home/report/ServiceCardReport'; // Importa el nuevo componente ServiceCardReport
+import React, { useState } from 'react';
+import { Container, Row, Col, Button, Card } from 'react-bootstrap';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_SERVICES_USER } from '../../../queries/getServicesByUser';
+import { DELETE_SERVICE_MUTATION } from '../../../mutations/deleteService';
 
 export function ReportHome() {
-    const [services, setServices] = useState<Service[]>([]);
-    const savedProfile = localStorage.getItem('userProfile');
-    const profileData: ProfileData = savedProfile ? JSON.parse(savedProfile) : {
-        fullName: '',
-        address: '',
-        gender: '',
-        email: '',
-        name: '',
-        lastName: '',
-        region: '',
-        province: '',
-        commune: ''
-    };
+    const userId = localStorage.getItem('iduser') || '';
+    const { loading, error, data, refetch } = useQuery(GET_SERVICES_USER, {
+        variables: { id: userId },
+    });
 
-    useEffect(() => {
-        const savedServices = localStorage.getItem('services');
-        if (savedServices) {
-            const parsedServices: Service[] = JSON.parse(savedServices);
-            const userServices = parsedServices.filter(service => service.email === profileData.email);
-            setServices(userServices);
+    const [deleteServiceById] = useMutation(DELETE_SERVICE_MUTATION);
+
+    const handleDelete = async (serviceId: string) => {
+        try {
+            await deleteServiceById({
+                variables: {
+                    id: serviceId,
+                },
+            });
+            console.log('Servicio eliminado con éxito');
+            refetch(); 
+        } catch (error) {
+            console.error('Error al eliminar el servicio:', error);
         }
-    }, [profileData.email]);
-
-    // Función para calcular las ventas totales generadas
-    const calculateTotalSales = () => {
-        return services.reduce((total, service) => total + parseInt(service.price), 0);
     };
+
+    if (loading) return <p>Cargando...</p>;
+    if (error) return <p>Error: {error.message}</p>;
 
     return (
-        <div className="container mt-5">
-            <h1>Reporte de Contrataciones</h1>
-            {services.length > 0 ? (
-                <div className="row mt-5">
-                    {services.map(service => (
-                        <ServiceCardReport
-                            key={service.id}
-                            service={service}
-                            totalSales={calculateTotalSales()}
-                        />
-                    ))}
-                </div>
-            ) : (
-                <p>No tienes contrataciones</p>
-            )}
-        </div>
+        <Container className="mt-5">
+            <h2 className="text-center mb-4">Servicios Ofrecidos</h2>
+            <Row xs={1} md={2} lg={3} className="g-4">
+                {data.getServicesByUser.map((service: any) => (
+                    <Col key={service.id}>
+                        <Card>
+                            <Card.Body>
+                                <Card.Title>{service.name}</Card.Title>
+                                <Card.Subtitle className="mb-2 text-muted">{service.description}</Card.Subtitle>
+                                <Card.Text>Precio: {service.price}</Card.Text>
+                                <Button variant="danger" onClick={() => handleDelete(service.id)}>Eliminar</Button>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                ))}
+            </Row>
+        </Container>
     );
 }

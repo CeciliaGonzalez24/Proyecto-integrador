@@ -1,42 +1,37 @@
-/* ServiceDetail.css */
-
-/* Estilos generales para el contenedor principal */
 .service-detail-container {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
 }
 
-/* Estilos para la sección de información del servicio */
 .service-info, .image-gallery {
     flex: 1;
 }
 
-/* Estilos para la galería de imágenes */
 .image-gallery {
-    max-width: 50%; /* Ajustar el ancho según necesidades */
+    max-width: 50%; /* Puedes ajustar el ancho según tus necesidades */
     padding-left: 20px; /* Espaciado entre las columnas */
 }
 
-/* Estilos para la sección de información del servicio */
 .service-info {
-    max-width: 50%; /* Ajustar el ancho según necesidades */
+    max-width: 50%; /* Puedes ajustar el ancho según tus necesidades */
 }
 
-/* Estilos para la ventana de chat */
-.chat-window {
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-top: 20px;
-    max-width: 100%; /* Ajustar el ancho máximo según necesidades */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.service-detail-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
 }
 
-.chat-window p {
-    margin: 5px 0;
+.service-info, .image-gallery {
+    flex: 1;
 }
 
-.chat-window p:first-child {
-    font-weight: bold;
+.image-gallery {
+    max-width: 50%; /* Puedes ajustar el ancho según tus necesidades */
+    padding-left: 20px; /* Espaciado entre las columnas */
+}
+
+.service-info {
+    max-width: 50%; /* Puedes ajustar el ancho según tus necesidades */
 }
