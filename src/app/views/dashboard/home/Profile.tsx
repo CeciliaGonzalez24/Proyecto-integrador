@@ -1,75 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
-import { chileData } from './Service/chileData';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_USER_BY_ID } from '../../../queries/getUserById';
+import { UPDATE_NATIONALITY_BY_ID } from '../../../queries/updateNationality';
+import { UPDATE_ADDRESS_BY_ID } from '../../../queries/updateAdress';
+import { UPDATE_EMAIL_BY_ID } from '../../../queries/updateEmail';
 
 export interface ProfileData {
-    fullName: string;
-    address: string;
-    birthDate: string;
-    nationality: string;
-    gender: string;
-    otherData: string;
-    email: string;
     name: string;
     lastName: string;
-    region: string;
-    province: string;
-    commune: string;
+    email: string;
+    address: string;
+    nationality: string;
 }
-
 
 export function Profile() {
     const [profileData, setProfileData] = useState<ProfileData>({
-        fullName: '',
-        address: '',
-        birthDate: '',
-        nationality: '',
-        gender: '',
-        otherData: '',
-        email: '',
         name: '',
         lastName: '',
-        region: '',
-        province: '',
-        commune: ''
+        email: '',
+        address: '',
+        nationality: ''
+    });
+    const userId = localStorage.getItem('iduser') || '';
+    const { loading, error, data, refetch } = useQuery(GET_USER_BY_ID, {
+        variables: { id: userId},  
     });
 
-
-    const [provinces, setProvinces] = useState<string[]>([]);
-    const [communes, setCommunes] = useState<string[]>([]);
-
     useEffect(() => {
-        const savedProfile = localStorage.getItem('userProfile');
-        if (savedProfile) {
-            setProfileData(JSON.parse(savedProfile));
+        if (data && data.getUserById) {
+            const userData = data.getUserById;
+            setProfileData({
+                name: userData.name,
+                lastName: userData.lastName,
+                email: userData.email,
+                address: userData.address,
+                nationality: userData.nationality
+            });
         }
-    }, []);
+    }, [data]);
 
-    useEffect(() => {
-        if (profileData.region) {
-            setProvinces(Object.keys(chileData[profileData.region]));
-            // Al cambiar de región, si la provincia seleccionada ya no es válida, resetea a vacío
-            if (!Object.keys(chileData[profileData.region]).includes(profileData.province)) {
-                setProfileData(prevState => ({ ...prevState, province: '', commune: '' }));
-            } else {
-                setCommunes(chileData[profileData.region][profileData.province]);
-                // Si la comuna seleccionada no está en la lista actual, resetea a vacío
-                if (!chileData[profileData.region][profileData.province].includes(profileData.commune)) {
-                    setProfileData(prevState => ({ ...prevState, commune: '' }));
-                }
-            }
-        }
-    }, [profileData.region]);
-
-    useEffect(() => {
-        if (profileData.region && profileData.province) {
-            setCommunes(chileData[profileData.region][profileData.province]);
-            // Si la comuna seleccionada no está en la lista actual, resetea a vacío
-            if (!chileData[profileData.region][profileData.province].includes(profileData.commune)) {
-                setProfileData(prevState => ({ ...prevState, commune: '' }));
-            }
-        }
-    }, [profileData.province]);
+    const [updateEmailById] = useMutation(UPDATE_EMAIL_BY_ID);
+    const [updateAddressById] = useMutation(UPDATE_ADDRESS_BY_ID);
+    const [updateNationalityById] = useMutation(UPDATE_NATIONALITY_BY_ID);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -79,11 +52,55 @@ export function Profile() {
         }));
     };
 
+    const handleUpdate = async () => {
+        // Verificar qué campos han cambiado y actualizar solo esos
+        const promises = [];
+        if (profileData.email !== data.getUserById.email) {
+            promises.push(updateEmailById({
+                variables: {
+                    id: userId,
+                    newEmail: profileData.email
+                }
+            }));
+        }
+        if (profileData.address !== data.getUserById.address) {
+            promises.push(updateAddressById({
+                variables: {
+                    id: userId,
+                    address: profileData.address
+                }
+            }));
+        }
+        if (profileData.nationality !== data.getUserById.nationality) {
+            promises.push(updateNationalityById({
+                variables: {
+                    id: userId,
+                    nationality: profileData.nationality
+                }
+            }));
+        }
+
+        try {
+            // Ejecutar todas las promesas de mutación
+            await Promise.all(promises);
+            // Refetch data después de las mutaciones para obtener los valores actualizados
+            refetch();
+            console.log('Actualización exitosa');
+        } catch (error) {
+            console.error('Error en la actualización:', error);
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        // Aquí puedes manejar la lógica para guardar los datos del perfil
         console.log('Profile Data:', profileData);
+        // Ejemplo de cómo podrías guardar en localStorage
         localStorage.setItem('userProfile', JSON.stringify(profileData));
     };
+
+    if (loading) return <p>Cargando...</p>;
+    if (error) return <p>Error: {error.message}</p>;
 
     return (
         <Container className="mt-5">
@@ -103,11 +120,10 @@ export function Profile() {
                                                 value={profileData.name}
                                                 onChange={handleChange}
                                                 required
+                                                readOnly  // Para campos que no se editarán
                                             />
                                         </Form.Group>
                                     </Col>
-                                </Row>
-                                <Row className="mb-3">
                                     <Col>
                                         <Form.Group>
                                             <Form.Label><strong>Apellidos</strong></Form.Label>
@@ -117,6 +133,7 @@ export function Profile() {
                                                 value={profileData.lastName}
                                                 onChange={handleChange}
                                                 required
+                                                readOnly  // Para campos que no se editarán
                                             />
                                         </Form.Group>
                                     </Col>
@@ -134,8 +151,6 @@ export function Profile() {
                                             />
                                         </Form.Group>
                                     </Col>
-                                </Row>
-                                <Row className="mb-3">
                                     <Col>
                                         <Form.Group>
                                             <Form.Label><strong>Dirección</strong></Form.Label>
@@ -150,19 +165,7 @@ export function Profile() {
                                     </Col>
                                 </Row>
                                 <Row className="mb-3">
-                                    <Col md={6}>
-                                        <Form.Group>
-                                            <Form.Label><strong>Fecha de Nacimiento</strong></Form.Label>
-                                            <Form.Control
-                                                type="date"
-                                                name="birthDate"
-                                                value={profileData.birthDate}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={6}>
+                                    <Col>
                                         <Form.Group>
                                             <Form.Label><strong>Nacionalidad</strong></Form.Label>
                                             <Form.Control
@@ -177,103 +180,8 @@ export function Profile() {
                                 </Row>
                                 <Row className="mb-3">
                                     <Col>
-                                        <Form.Group>
-                                            <Form.Label><strong>Género</strong></Form.Label>
-                                            <Form.Control
-                                                as="select"
-                                                name="gender"
-                                                value={profileData.gender}
-                                                onChange={handleChange}
-                                                required
-                                            >
-                                                <option value="">Seleccionar</option>
-                                                <option value="Masculino">Masculino</option>
-                                                <option value="Femenino">Femenino</option>
-                                                <option value="Otro">Otro</option>
-                                            </Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                                <Row className="mb-3">
-                                    <Col md={4}>
-                                        <Form.Group>
-                                            <Form.Label><strong>Región</strong></Form.Label>
-                                            <Form.Control
-                                                as="select"
-                                                name="region"
-                                                value={profileData.region}
-                                                onChange={handleChange}
-                                                required
-                                            >
-                                                <option value="">Seleccionar</option>
-                                                {Object.keys(chileData).map(region => (
-                                                    <option key={region} value={region}>
-                                                        {region}
-                                                    </option>
-                                                ))}
-                                            </Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={4}>
-                                        <Form.Group>
-                                            <Form.Label><strong>Provincia</strong></Form.Label>
-                                            <Form.Control
-                                                as="select"
-                                                name="province"
-                                                value={profileData.province}
-                                                onChange={handleChange}
-                                                disabled={!profileData.region}
-                                                required
-                                            >
-                                                <option value="">Seleccionar</option>
-                                                {provinces.map(province => (
-                                                    <option key={province} value={province}>
-                                                        {province}
-                                                    </option>
-                                                ))}
-                                            </Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={4}>
-                                        <Form.Group>
-                                            <Form.Label><strong>Comuna</strong></Form.Label>
-                                            <Form.Control
-                                                as="select"
-                                                name="commune"
-                                                value={profileData.commune}
-                                                onChange={handleChange}
-                                                disabled={!profileData.province}
-                                                required
-                                            >
-                                                <option value="">Seleccionar</option>
-                                                {communes.map(commune => (
-                                                    <option key={commune} value={commune}>
-                                                        {commune}
-                                                    </option>
-                                                ))}
-                                            </Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                                <Row className="mb-3">
-                                    <Col>
-                                        <Form.Group>
-                                            <Form.Label><strong>Cuentanos sobre ti</strong></Form.Label>
-                                            <Form.Control
-                                                as="textarea"
-                                                rows={3}
-                                                name="otherData"
-                                                value={profileData.otherData}
-                                                onChange={handleChange}
-                                                
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                                <Row className="mb-3">
-                                    <Col>
-                                        <Button type="submit" className="w-100 btn btn-primary">
-                                            Guardar Perfil
+                                        <Button type="button" className="w-100 btn btn-primary" onClick={handleUpdate}>
+                                            Actualizar Perfil
                                         </Button>
                                     </Col>
                                 </Row>

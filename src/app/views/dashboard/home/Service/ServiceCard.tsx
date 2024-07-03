@@ -29,9 +29,7 @@ export function ServiceCard({ service, onEdit, onDelete, onRequest }: ServiceCar
                     {service.profileData.name && (
                         <div>
                             <p><strong>Nombre:</strong> {service.profileData.name} {service.profileData.lastName}</p>
-                            <p><strong>Región:</strong> {service.profileData.region}</p>
                             <p><strong>Nacionalidad:</strong> {service.profileData.nationality}</p>
-                            <p><strong>Género:</strong> {service.profileData.gender}</p>
                         </div>
                     )}
                     <p className="card-text">Solicitudes: {service.requestCount}</p>  {/* Mostrar el conteo de solicitudes */}

@@ -65,9 +65,7 @@ export function ServiceDetail() {
                 {service.profileData.name && (
                     <div>
                         <p><strong>Nombre:</strong> {service.profileData.name} {service.profileData.lastName}</p>
-                        <p><strong>Región:</strong> {service.profileData.region}</p>
                         <p><strong>Dirección:</strong> {service.profileData.address}</p>
-                        <p><strong>Género:</strong> {service.profileData.gender}</p>
                     </div>
                 )}
                 

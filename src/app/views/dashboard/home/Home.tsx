@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, Navbar, Form, FormControl, Container, Row, Col, Button } from 'react-bootstrap';
 import { Service } from './Store'; 
@@ -22,12 +21,12 @@ export function Home() {
     };
 
     const handleServiceClick = (type: string) => {
-        history.push(`/ServiceDetail/${type}`); // Convertimos el id a string
+        history.push(`/ServiceDetail/${type}`); 
     };
 
     const filteredServices = services.filter(service => 
-        service.type.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+        service.type && service.type.toLowerCase().includes(searchTerm.toLowerCase())
+      );
 
     const sortedServices = [...services].sort((a, b) => b.requestCount - a.requestCount);
     const topServices = sortedServices.slice(0, 3);
@@ -65,7 +64,6 @@ export function Home() {
                                     {service.profileData.name && (
                                         <div>
                                             <p><strong>Nombre:</strong> {service.profileData.name} {service.profileData.lastName}</p>
-                                            <p><strong>Región:</strong> {service.profileData.region}</p>
                                         </div>
                                     )}
                                     <Button variant="primary" onClick={() => handleServiceClick(service.type)}>Ver Detalle</Button>
@@ -89,7 +87,6 @@ export function Home() {
                                         {service.profileData.name && (
                                             <div>
                                                 <p><strong>Nombre:</strong> {service.profileData.name} {service.profileData.lastName}</p>
-                                                <p><strong>Región:</strong> {service.profileData.region}</p>
                                             </div>
                                         )}
                                         <Button variant='primary' onClick={() => handleServiceClick(service.type)}>Ver Detalle</Button>

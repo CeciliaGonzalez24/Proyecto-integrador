@@ -5,9 +5,9 @@ import { useContext } from 'react';
 import { AuthContext } from '../views/store/contexts/AuthContext';
 import { PrivateRouter } from './PrivateRouter';
 import { DashboardRouter } from '../views/dashboard/DashboardRouter';
-import { Register } from '../views/auth/register/Register';
+import Register from '../views/auth/register/Register';
 import { Home } from '../views/dashboard/home/Home';
-import { Recover } from '../views/auth/recover/Recover';
+import  Recover  from '../views/auth/recover/Recover';
 import { Store } from '../views/dashboard/home/Store';
 import { Navbar } from '../views/auth/components/Navbar';
 import { Container } from 'react-bootstrap';
@@ -32,7 +32,7 @@ export function AppRouter() {
 
 
     return(
-        <SessionProvider session={null}> {/* Asegúrate de configurar adecuadamente tu sesión aquí */}
+        <SessionProvider session={null}> {}
             <Router>
             <Switch>
                 

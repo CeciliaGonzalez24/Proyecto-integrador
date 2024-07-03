@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Form, Button } from 'react-bootstrap';
-import { ProfileData } from './Profile'; 
-import { ServiceCard } from './Service/ServiceCard'; 
+import { ProfileData } from './Profile';
+import { ServiceCard } from './Service/ServiceCard';
+import { useMutation, useQuery } from '@apollo/client';
+import { CREATE_SERVICE_MUTATION } from '../../../mutations/createService';
+import { GET_ALL_CATEGORIES_QUERY } from '../../../queries/getCategories';
 
 export interface Service {
     id: number;
@@ -10,8 +13,10 @@ export interface Service {
     summary: string;
     email: string;
     profileData: ProfileData;
-    images: string[]; 
-    requestCount: number;  // Nueva propiedad para contar las solicitudes
+    images: string[];
+    requestCount: number;
+    category: string;
+    id2:string | null;
 }
 
 const initialService: Service = {
@@ -21,21 +26,16 @@ const initialService: Service = {
     summary: '',
     email: '',
     profileData: {
-        fullName: '',
         address: '',
-        birthDate: '',
         nationality: '',
-        gender: '',
-        otherData: '',
         email: '',
         name: '',
         lastName: '',
-        region: '',
-        province: '',
-        commune: ''
     },
     images: [],
-    requestCount: 0  // Inicializa el contador de solicitudes
+    requestCount: 0,
+    category: '',
+    id2:'',
 };
 
 const getNextServiceId = () => {
@@ -53,19 +53,18 @@ export function Store() {
 
     const savedProfile = localStorage.getItem('userProfile');
     const profileData: ProfileData = savedProfile ? JSON.parse(savedProfile) : {
-        fullName: '',
         address: '',
-        birthDate: '',
         nationality: '',
-        gender: '',
-        otherData: '',
         email: '',
         name: '',
         lastName: '',
-        region: '',
-        province: '',
-        commune: ''
     };
+
+    const { loading, error, data } = useQuery(GET_ALL_CATEGORIES_QUERY);
+    const userId = localStorage.getItem('iduser') || '';
+    console.log(userId)
+    const [createServiceMutation] = useMutation(CREATE_SERVICE_MUTATION);
+    console.log(newService.category,newService.price,newService.summary)
 
     useEffect(() => {
         const savedServices = localStorage.getItem('services');
@@ -87,7 +86,7 @@ export function Store() {
         }
     }, [services, profileData.email]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         if (name === 'price' && !(/^\d+$/.test(value))) {
             return;
@@ -105,29 +104,52 @@ export function Store() {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (newService.type && newService.price && newService.summary) {
-            const serviceWithProfile: Service = {
-                ...newService,
-                id: isEditing ? newService.id : getNextServiceId(),
-                email: profileData.email,
-                profileData: { ...profileData },
-                images: imageFiles.map(file => URL.createObjectURL(file)), // Create object URLs for the images
-                requestCount: newService.requestCount  // Mantener el conteo de solicitudes
-            };
+        if (newService.price && newService.category && newService.summary) {
+            try {
+                const { data } = await createServiceMutation({
+                    variables: {
+                        createService: {
+                            name: newService.type,
+                            price: Number(newService.price),
+                            category_name: newService.category,
+                            description: newService.summary,
+                            id_user: userId
+                        }
+                    }
+                });
 
-            if (isEditing) {
-                const updatedServices = services.map(service =>
-                    service.id === newService.id ? serviceWithProfile : service
-                );
-                setServices(updatedServices);
-                setIsEditing(false);
-            } else {
-                setServices([...services, serviceWithProfile]);
+                console.log('Servicio creado:', data);
+                alert('Se ha registrado un nuevo servicio en el sistema.');
+
+                const serviceWithProfile: Service = {
+                    ...newService,
+                    id: isEditing ? newService.id : getNextServiceId(),
+                    email: profileData.email,
+                    profileData: { ...profileData },
+                    images: imageFiles.map(file => URL.createObjectURL(file)),
+                    requestCount: newService.requestCount,
+                    id2: data.createService.id
+                };
+
+                console.log('Nuevo servicio con perfil:', serviceWithProfile);
+
+                if (isEditing) {
+                    const updatedServices = services.map(service =>
+                        service.id === newService.id ? serviceWithProfile : service
+                    );
+                    setServices(updatedServices);
+                    setIsEditing(false);
+                } else {
+                    setServices([...services, serviceWithProfile]);
+                }
+                setNewService(initialService);
+                setImageFiles([]);
+
+            } catch (error) {
+                console.error('Error al crear servicio:', error);
             }
-            setNewService(initialService);
-            setImageFiles([]);
         } else {
             alert('Por favor completa todos los campos.');
         }
@@ -143,13 +165,16 @@ export function Store() {
     const handleEdit = (service: Service) => {
         setNewService(service);
         setIsEditing(true);
-        setImageFiles([]); // Clear image files on edit
+        setImageFiles([]);
     };
 
     const handleDelete = (id: number) => {
         const updatedServices = services.filter(service => service.id !== id);
         setServices(updatedServices);
     };
+
+    if (loading) return <p>Cargando categorías...</p>;
+    if (error) return <p>Error al cargar categorías: {error.message}</p>;
 
     return (
         <div className="container mt-5">
@@ -188,7 +213,25 @@ export function Store() {
                                 />
                             </Form.Group>
                         </Row>
-                    
+                        <Row>
+                            <Form.Group className="mb-3">
+                                <Form.Label className="form-label"><strong>Categoría</strong></Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    className="form-control"
+                                    name="category"
+                                    value={newService.category}
+                                    onChange={handleChange}
+                                    style={{ minWidth: '300px' }}
+                                >
+                                    <option value="">Selecciona una categoría...</option>
+                                    {data.getAllCategories.map((category: { id: number, name: string }) => (
+                                        <option key={category.id} value={category.name}>{category.name}</option>
+                                    ))}
+                                </Form.Control>
+                            </Form.Group>
+                        </Row>
+                        
                         <Form.Group className="mb-3">
                             <Form.Label className="form-label"><strong>Descripción del Servicio</strong></Form.Label>
                             <Form.Control
@@ -236,7 +279,7 @@ export function Store() {
                             service={service}
                             onEdit={handleEdit}
                             onDelete={handleDelete}
-                            onRequest={handleRequest}  // Pasa la nueva función
+                            onRequest={handleRequest}
                         />
                     ))}
                 </div>
