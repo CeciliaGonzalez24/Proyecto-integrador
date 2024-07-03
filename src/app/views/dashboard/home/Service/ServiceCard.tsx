@@ -1,21 +1,18 @@
 import React from 'react';
+import { Card, Button } from 'react-bootstrap';
 import { Service } from '../Store';
-import { Button } from 'react-bootstrap';
 
 interface ServiceCardProps {
     service: Service;
     onEdit: (service: Service) => void;
     onDelete: (id: number) => void;
-    onRequest: (id: number) => void;  // Nueva propiedad para manejar solicitudes
-
+    onRequest: (id: number) => void;
 }
 
-export function ServiceCard({ service, onEdit, onDelete, onRequest }: ServiceCardProps) {
+export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit, onDelete, onRequest }) => {
     return (
-        <div className="col-md-4 mb-4">
-            <div className="card">
-                <div className="card-body">
-                    {service.images.length > 0 && (
+        <Card className="col m-4 mb-4">
+            <Card.Body> {service.images.length > 0 && (
                         <img
                             src={service.images[0]} // Show the first image
                             alt="Service Image"
@@ -23,39 +20,16 @@ export function ServiceCard({ service, onEdit, onDelete, onRequest }: ServiceCar
                             style={{ maxHeight: '150px', objectFit: 'cover' }}
                         />
                     )}
-                    <h5 className="card-title">{service.type}</h5>
-                    <p className="card-text"><strong>Valor:</strong> {service.price}</p>
-                    <p className="card-text">{service.summary}</p>
-                    {service.profileData.name && (
-                        <div>
-                            <p><strong>Nombre:</strong> {service.profileData.name} {service.profileData.lastName}</p>
-                            <p><strong>Región:</strong> {service.profileData.region}</p>
-                            <p><strong>Nacionalidad:</strong> {service.profileData.nationality}</p>
-                            <p><strong>Género:</strong> {service.profileData.gender}</p>
-                        </div>
-                    )}
-                    <p className="card-text">Solicitudes: {service.requestCount}</p>  {/* Mostrar el conteo de solicitudes */}
-                    <button className="btn btn-primary" onClick={() => onRequest(service.id)}>Solicitar</button>  {/* Botón para solicitar el servicio */}
-                    {onEdit && onDelete && (
-                        <div className="d-grid gap-2">
-                            <Button
-                                type="button"
-                                className="btn btn-primary"
-                                onClick={() => onEdit(service)}
-                            >
-                                Editar
-                            </Button>
-                            <Button
-                                type="button"
-                                className="btn btn-danger"
-                                onClick={() => onDelete(service.id)}
-                            >
-                                Eliminar
-                            </Button>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
+                <Card.Title>{service.type}</Card.Title>
+                <Card.Text>{service.summary}</Card.Text>
+                <Card.Text><strong>Valor:</strong> {service.price}</Card.Text>
+                <Card.Text><strong>Categoría:</strong> {service.category}</Card.Text>
+                <Card.Text><strong>Disponibilidad:</strong> {Object.keys(service.availability).filter(day => service.availability[day]).join(', ')}</Card.Text>
+                
+                <Button variant="primary" onClick={() => onRequest(service.id)}>Solicitar Servicio</Button>
+                <Button variant="warning" onClick={() => onEdit(service)}>Editar</Button>
+                <Button variant="danger" onClick={() => onDelete(service.id)}>Eliminar</Button>
+            </Card.Body>
+        </Card>
     );
-}
+};

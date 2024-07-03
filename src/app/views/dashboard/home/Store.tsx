@@ -10,8 +10,10 @@ export interface Service {
     summary: string;
     email: string;
     profileData: ProfileData;
-    images: string[]; 
-    requestCount: number;  // Nueva propiedad para contar las solicitudes
+    images: string[];
+    requestCount: number;
+    category: string;
+    availability: { [date: string]: boolean };
 }
 
 const initialService: Service = {
@@ -35,8 +37,12 @@ const initialService: Service = {
         commune: ''
     },
     images: [],
-    requestCount: 0  // Inicializa el contador de solicitudes
+    requestCount: 0,
+    category: '',
+    availability: {} 
 };
+
+const categories = ['Peluquería', 'Electricista', 'Plomero', 'Carpintero', 'Otros'];
 
 const getNextServiceId = () => {
     const currentId = localStorage.getItem('serviceIdCounter');
@@ -50,6 +56,7 @@ export function Store() {
     const [newService, setNewService] = useState<Service>(initialService);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [imageFiles, setImageFiles] = useState<File[]>([]);
+    const [availability, setAvailability] = useState<{ [date: string]: boolean }>({});
 
     const savedProfile = localStorage.getItem('userProfile');
     const profileData: ProfileData = savedProfile ? JSON.parse(savedProfile) : {
@@ -87,7 +94,7 @@ export function Store() {
         }
     }, [services, profileData.email]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         if (name === 'price' && !(/^\d+$/.test(value))) {
             return;
@@ -96,6 +103,13 @@ export function Store() {
             ...newService,
             [name]: value
         });
+    };
+
+    const handleAvailabilityChange = (date: string) => {
+        setAvailability(prevAvailability => ({
+            ...prevAvailability,
+            [date]: !prevAvailability[date]
+        }));
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,14 +121,15 @@ export function Store() {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (newService.type && newService.price && newService.summary) {
+        if (newService.type && newService.price && newService.summary && newService.category) {
             const serviceWithProfile: Service = {
                 ...newService,
                 id: isEditing ? newService.id : getNextServiceId(),
                 email: profileData.email,
                 profileData: { ...profileData },
-                images: imageFiles.map(file => URL.createObjectURL(file)), // Create object URLs for the images
-                requestCount: newService.requestCount  // Mantener el conteo de solicitudes
+                images: imageFiles.map(file => URL.createObjectURL(file)),
+                requestCount: newService.requestCount,
+                availability: availability 
             };
 
             if (isEditing) {
@@ -128,6 +143,7 @@ export function Store() {
             }
             setNewService(initialService);
             setImageFiles([]);
+            setAvailability({});
         } else {
             alert('Por favor completa todos los campos.');
         }
@@ -143,7 +159,8 @@ export function Store() {
     const handleEdit = (service: Service) => {
         setNewService(service);
         setIsEditing(true);
-        setImageFiles([]); // Clear image files on edit
+        setImageFiles([]);
+        setAvailability(service.availability); 
     };
 
     const handleDelete = (id: number) => {
@@ -189,6 +206,25 @@ export function Store() {
                             </Form.Group>
                         </Row>
                     
+                        <Row>
+                            <Form.Group className="mb-3">
+                                <Form.Label className="form-label"><strong>Categoría</strong></Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    name="category"
+                                    value={newService.category}
+                                    onChange={handleChange}
+                                    className="form-control"
+                                    style={{ minWidth: '300px' }}
+                                >
+                                    <option value="">Selecciona una categoría</option>
+                                    {categories.map((category, index) => (
+                                        <option key={index} value={category}>{category}</option>
+                                    ))}
+                                </Form.Control>
+                            </Form.Group>
+                        </Row>
+
                         <Form.Group className="mb-3">
                             <Form.Label className="form-label"><strong>Descripción del Servicio</strong></Form.Label>
                             <Form.Control
@@ -211,6 +247,21 @@ export function Store() {
                                 multiple
                                 onChange={handleImageChange}
                             />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label className="form-label"><strong>Disponibilidad</strong></Form.Label>
+                            <div>
+                                {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].map(day => (
+                                    <Form.Check
+                                        type="checkbox"
+                                        label={day}
+                                        key={day}
+                                        checked={availability[day] || false}
+                                        onChange={() => handleAvailabilityChange(day)}
+                                    />
+                                ))}
+                            </div>
                         </Form.Group>
 
                         <div className="d-grid gap-2">
@@ -236,7 +287,7 @@ export function Store() {
                             service={service}
                             onEdit={handleEdit}
                             onDelete={handleDelete}
-                            onRequest={handleRequest}  // Pasa la nueva función
+                            onRequest={handleRequest}  
                         />
                     ))}
                 </div>
