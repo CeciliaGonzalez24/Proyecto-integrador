@@ -147,6 +147,8 @@ export function Profile() {
                                                 name="email"
                                                 value={profileData.email}
                                                 onChange={handleChange}
+                                                readOnly // Esto hace que el campo sea de solo lectura
+                                                style={{ backgroundColor: '#f0f0f0', cursor: 'not-allowed' }} // Ejemplo de estilo visual
                                                 required
                                             />
                                         </Form.Group>

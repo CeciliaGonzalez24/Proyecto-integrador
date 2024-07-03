@@ -8,6 +8,11 @@ interface Review {
     content: string;
 }
 
+interface Props {
+    service: Service;
+    userName: string;
+}
+
 export function ServiceDetail() {
     const { type } = useParams<{ type: string }>(); // Obtener el parámetro type de la URL
     const history = useHistory(); // Hook para redirigir
@@ -17,6 +22,9 @@ export function ServiceDetail() {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [newReview, setNewReview] = useState<string>('');
     const [userName, setUserName] = useState<string>('');
+
+    const [chatOpen, setChatOpen] = useState(false); // Estado para controlar la ventana de chat
+    const [chatMessages, setChatMessages] = useState<string[]>([]); // Estado para mensajes del chat
 
     useEffect(() => {
         // Obtener el nombre del usuario actual de localStorage
@@ -29,11 +37,17 @@ export function ServiceDetail() {
             const parsedReviews: Review[] = JSON.parse(savedReviews);
             setReviews(parsedReviews);
         }
+
+        const savedChatResponses = localStorage.getItem('chatResponses');
+        if (savedChatResponses) {
+            const parsedResponses: string[] = JSON.parse(savedChatResponses);
+            setChatMessages(parsedResponses);
+        }
     }, []);
 
     const handleReviewSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (newReview.trim() && userName.trim()) {
+        if (newReview.trim() && userName.trim() && service) { // Verificar que service no sea undefined
             const newReviews = [...reviews, { userName, content: newReview }];
             setReviews(newReviews);
             setNewReview('');
@@ -43,13 +57,25 @@ export function ServiceDetail() {
     };
 
     const handleHireClick = () => {
-        // Redirigir a la página de reservas
-        history.push('/reservation'); // Aquí debes asegurarte de que la ruta sea correcta
+        if (service) {
+            // Redirigir a la página de reservas solo si service no es undefined
+            history.push(`/reservation?serviceType=${service.type}&userName=${userName}`); // Asegúrate de que la ruta sea correcta
+        }
     };
 
     const handleChatClick = () => {
-        // Aquí puedes añadir la lógica para manejar el clic en el botón "Chat"
-        console.log("Botón 'Chat' clickeado");
+        // Lógica para abrir o cerrar la ventana de chat
+        setChatOpen(prevState => !prevState); // Alternar el estado de chatOpen
+    };
+
+    const handleChatSubmit = (question: string) => {
+        const trimmedQuestion = question.trim().toLowerCase();
+        const response = chatMessages.find(msg => msg.toLowerCase().includes(trimmedQuestion));
+        if (response) {
+            return response;
+        } else {
+            return "Espere mientras nos contactamos contigo...";
+        }
     };
 
     if (!service) {
@@ -83,6 +109,30 @@ export function ServiceDetail() {
                     >
                         Chat
                     </button>
+
+                    {chatOpen && (
+                        <div className="chat-window">
+                            {/* Contenido del chat */}
+                            <p>Bienvenido al chat. ¿En qué puedo ayudarte hoy?</p>
+                            <form onSubmit={(e) => {
+                                e.preventDefault();
+                                const userInput = (e.target as HTMLFormElement).elements.namedItem('userInput') as HTMLInputElement;
+                                if (userInput) {
+                                    const response = handleChatSubmit(userInput.value);
+                                    alert(response); // Aquí podrías mostrar la respuesta en algún componente adecuado
+                                    userInput.value = ''; // Limpiar el input después de enviar
+                                }
+                            }}>
+                                <input
+                                    type="text"
+                                    name="userInput"
+                                    className="form-control mb-2"
+                                    placeholder="Escribe tu pregunta aquí..."
+                                />
+                                <button type="submit" className="btn btn-primary mb-2">Enviar</button>
+                            </form>
+                        </div>
+                    )}
 
                     <h2>Reseñas</h2>
                     <form onSubmit={handleReviewSubmit}>
@@ -141,3 +191,5 @@ export function ServiceDetail() {
         </div>
     );
 }
+
+export default ServiceDetail;

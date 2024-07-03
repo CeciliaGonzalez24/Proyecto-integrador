@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';  
 import { Card, Navbar, Form, FormControl, Container, Row, Col, Button } from 'react-bootstrap';
 import { Service } from './Store'; 
 import { useHistory } from 'react-router-dom';
@@ -80,7 +80,6 @@ export function Home() {
                             <Col key={service.id} md={4} className="mb-4">
                                 <Card >
                                     <Card.Body>
-                                        <h5 className="card-title">{service.type}</h5>
                                         <h5 className="card-title">{service.type}</h5>
                                         <p className="card-text"><strong>Valor:</strong> {service.price}</p>
                                         <p className="card-text">{service.summary}</p>

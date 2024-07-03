@@ -1,3 +1,4 @@
+//Store.tsx
 import React, { useState, useEffect } from 'react';
 import { Row, Form, Button } from 'react-bootstrap';
 import { ProfileData } from './Profile';
@@ -38,6 +39,8 @@ const initialService: Service = {
     id2:'',
 };
 
+const categories = ['Peluquería', 'Electricista', 'Plomero', 'Carpintero', 'Otros'];
+
 const getNextServiceId = () => {
     const currentId = localStorage.getItem('serviceIdCounter');
     const nextId = currentId ? parseInt(currentId) + 1 : 1;
@@ -50,6 +53,7 @@ export function Store() {
     const [newService, setNewService] = useState<Service>(initialService);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [imageFiles, setImageFiles] = useState<File[]>([]);
+    const [availability, setAvailability] = useState<{ [date: string]: boolean }>({});
 
     const savedProfile = localStorage.getItem('userProfile');
     const profileData: ProfileData = savedProfile ? JSON.parse(savedProfile) : {
@@ -95,6 +99,13 @@ export function Store() {
             ...newService,
             [name]: value
         });
+    };
+
+    const handleAvailabilityChange = (date: string) => {
+        setAvailability(prevAvailability => ({
+            ...prevAvailability,
+            [date]: !prevAvailability[date]
+        }));
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -254,6 +265,21 @@ export function Store() {
                                 multiple
                                 onChange={handleImageChange}
                             />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label className="form-label"><strong>Disponibilidad</strong></Form.Label>
+                            <div>
+                                {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].map(day => (
+                                    <Form.Check
+                                        type="checkbox"
+                                        label={day}
+                                        key={day}
+                                        checked={availability[day] || false}
+                                        onChange={() => handleAvailabilityChange(day)}
+                                    />
+                                ))}
+                            </div>
                         </Form.Group>
 
                         <div className="d-grid gap-2">

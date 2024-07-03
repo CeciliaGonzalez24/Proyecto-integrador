@@ -1,0 +1,11 @@
+/*ServiceCardReport.css*/
+.service-card-report .service-image {
+    max-width: 200px; /* Ancho máximo de la imagen */
+    max-height: 200px; /* Alto máximo de la imagen */
+    object-fit: cover; /* Ajuste de la imagen */
+    margin: 5px; /* Espaciado entre imágenes */
+}
+
+.service-card-report .sales-info {
+    padding-top: 10px; /* Espaciado superior para separar de la información del servicio */
+}
