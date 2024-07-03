@@ -1,3 +1,4 @@
+//Store.tsx
 import React, { useState, useEffect } from 'react';
 import { Row, Form, Button } from 'react-bootstrap';
 import { ProfileData } from './Profile'; 
@@ -12,8 +13,7 @@ export interface Service {
     profileData: ProfileData;
     images: string[];
     requestCount: number;
-    category: string;
-    availability: { [date: string]: boolean };
+    category: string
 }
 
 const initialService: Service = {
@@ -25,18 +25,13 @@ const initialService: Service = {
     profileData: {
         fullName: '',
         address: '',
-        gender: '',
         email: '',
         name: '',
-        lastName: '',
-        region: '',
-        province: '',
-        commune: ''
+        lastName: ''
     },
     images: [],
     requestCount: 0,
-    category: '',
-    availability: {} 
+    category: ''
 };
 
 const categories = ['Peluquería', 'Electricista', 'Plomero', 'Carpintero', 'Otros'];
@@ -62,10 +57,7 @@ export function Store() {
         gender: '',
         email: '',
         name: '',
-        lastName: '',
-        region: '',
-        province: '',
-        commune: ''
+        lastName: ''
     };
 
     useEffect(() => {
@@ -122,8 +114,7 @@ export function Store() {
                 email: profileData.email,
                 profileData: { ...profileData },
                 images: imageFiles.map(file => URL.createObjectURL(file)),
-                requestCount: newService.requestCount,
-                availability: availability 
+                requestCount: newService.requestCount
             };
 
             if (isEditing) {
@@ -154,7 +145,6 @@ export function Store() {
         setNewService(service);
         setIsEditing(true);
         setImageFiles([]);
-        setAvailability(service.availability); 
     };
 
     const handleDelete = (id: number) => {

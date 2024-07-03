@@ -32,7 +32,7 @@ export const ServiceCardReport: React.FC<ServiceCardReportProps> = ({ service, t
                     </Col>
                     <Col md={6}> {/* Columna para las ventas generadas */}
                         <Card.Text className="sales-info">
-                            Actualizando tu reportería, espere un momento
+                            Estamos trabajando en tu reportería, espera tu proxima actualizacion
                         </Card.Text>
                     </Col>
                 </Row>

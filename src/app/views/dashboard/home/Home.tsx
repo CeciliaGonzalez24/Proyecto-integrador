@@ -64,9 +64,6 @@ export function Home() {
                                     {service.profileData.name && (
                                         <div>
                                             <p><strong>Nombre:</strong> {service.profileData.name} {service.profileData.lastName}</p>
-                                            <p><strong>Región:</strong> {service.profileData.region}</p>
-                                            <p><strong>Disponibilidad:</strong> {Object.keys(service.availability).filter(day => service.availability[day]).join(', ')}</p>
-
                                         </div>
                                     )}
                                     <Button variant="primary" onClick={() => handleServiceClick(service.type)}>Ver Detalle</Button>
@@ -89,7 +86,6 @@ export function Home() {
                                         {service.profileData.name && (
                                             <div>
                                                 <p><strong>Nombre:</strong> {service.profileData.name} {service.profileData.lastName}</p>
-                                                <p><strong>Región:</strong> {service.profileData.region}</p>
                                             </div>
                                         )}
                                         <Button variant='primary' onClick={() => handleServiceClick(service.type)}>Ver Detalle</Button>

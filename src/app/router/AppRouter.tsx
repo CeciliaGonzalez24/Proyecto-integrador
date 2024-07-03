@@ -17,6 +17,7 @@ import { ReportHome } from '../views/dashboard/home/ReportHome';
 import  Reservation  from '../views/dashboard/home/Reservation';
 import { SessionProvider } from 'next-auth/react'; 
 import { ServiceDetail } from '../views/dashboard/home/Service/ServiceDetail';
+import { ReservationConfirmation } from '../views/dashboard/home/Service/ReservationConfirmation';
 
 interface Context {
     dispatchUser?: any;
@@ -51,6 +52,7 @@ export function AppRouter() {
                                 <Route path='/profile' component={Profile} />
                                 <Route path='/report' component={ReportHome} />
                                 <Route path='/reservation' component={Reservation} />
+                                <Route path='/reservationConfirmation' component={ReservationConfirmation} />
                                 <Route path="/ServiceDetail/:type" component={ServiceDetail} />
                                 </Container>
                         </>

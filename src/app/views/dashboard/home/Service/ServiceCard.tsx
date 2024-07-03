@@ -24,9 +24,8 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit, onDel
                 <Card.Text>{service.summary}</Card.Text>
                 <Card.Text><strong>Valor:</strong> {service.price}</Card.Text>
                 <Card.Text><strong>Categoría:</strong> {service.category}</Card.Text>
-                <Card.Text><strong>Disponibilidad:</strong> {Object.keys(service.availability).filter(day => service.availability[day]).join(', ')}</Card.Text>
                 
-                <Button variant="primary" onClick={() => onRequest(service.id)}>Solicitar Servicio</Button>
+             
                 <Button variant="warning" onClick={() => onEdit(service)}>Editar</Button>
                 <Button variant="danger" onClick={() => onDelete(service.id)}>Eliminar</Button>
             </Card.Body>
