@@ -5,10 +5,7 @@ import { chileData } from './Service/chileData';
 export interface ProfileData {
     fullName: string;
     address: string;
-    birthDate: string;
-    nationality: string;
     gender: string;
-    otherData: string;
     email: string;
     name: string;
     lastName: string;
@@ -22,10 +19,7 @@ export function Profile() {
     const [profileData, setProfileData] = useState<ProfileData>({
         fullName: '',
         address: '',
-        birthDate: '',
-        nationality: '',
         gender: '',
-        otherData: '',
         email: '',
         name: '',
         lastName: '',
@@ -150,32 +144,6 @@ export function Profile() {
                                     </Col>
                                 </Row>
                                 <Row className="mb-3">
-                                    <Col md={6}>
-                                        <Form.Group>
-                                            <Form.Label><strong>Fecha de Nacimiento</strong></Form.Label>
-                                            <Form.Control
-                                                type="date"
-                                                name="birthDate"
-                                                value={profileData.birthDate}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={6}>
-                                        <Form.Group>
-                                            <Form.Label><strong>Nacionalidad</strong></Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="nationality"
-                                                value={profileData.nationality}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                                <Row className="mb-3">
                                     <Col>
                                         <Form.Group>
                                             <Form.Label><strong>Género</strong></Form.Label>
@@ -252,21 +220,6 @@ export function Profile() {
                                                     </option>
                                                 ))}
                                             </Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                                <Row className="mb-3">
-                                    <Col>
-                                        <Form.Group>
-                                            <Form.Label><strong>Cuentanos sobre ti</strong></Form.Label>
-                                            <Form.Control
-                                                as="textarea"
-                                                rows={3}
-                                                name="otherData"
-                                                value={profileData.otherData}
-                                                onChange={handleChange}
-                                                
-                                            />
                                         </Form.Group>
                                     </Col>
                                 </Row>

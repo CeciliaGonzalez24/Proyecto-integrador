@@ -9,10 +9,7 @@ export function ReportHome() {
     const profileData: ProfileData = savedProfile ? JSON.parse(savedProfile) : {
         fullName: '',
         address: '',
-        birthDate: '',
-        nationality: '',
         gender: '',
-        otherData: '',
         email: '',
         name: '',
         lastName: '',
